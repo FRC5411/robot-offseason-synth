@@ -1,2 +1,2 @@
-# robot-offseason-synth
- The offseason rewrite for the 9105 robot "Synth" for the 2024 Crescendo season of FRC
+# Base Template for All Prosper Engineering FRC Projects
+This is the base template all teams should be using for their robot

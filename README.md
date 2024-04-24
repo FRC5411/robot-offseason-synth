@@ -31,7 +31,7 @@ Below is a list of instructions to properly *build* the project, see [requiremen
       
 ## Structure & Organization
 
-The project is organized based on WPILib's command-based control structure modified to fit our own needs and can be found [here](https://docs.google.com/document/d/1IrDxQFM6M3gsqsZLIETJGJXaWM8zJ7IgAcHsC6BfKdk/edit?usp=sharing).
+The project is organized based on WPILib's command-based control structure modified to fit our own needs and can be found [here](LINK STRUCTURE).
 
 
 ## Gradle 

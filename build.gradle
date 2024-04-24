@@ -1,0 +1,254 @@
+// ------------------------------------------------------------------[Libraries]-----------------------------------------------------------------//
+import groovy.json.JsonSlurper
+import java.text.SimpleDateFormat
+import java.nio.charset.StandardCharsets
+// -------------------------------------------------------------------[Plugins]------------------------------------------------------------------//
+plugins {
+  id "java"
+  id "application"
+  id "io.freefair.lombok" version "8.6"
+  id "com.diffplug.spotless" version "6.23.+"
+  id "com.peterabeles.gversion" version "1.+"
+  id 'com.github.johnrengelman.shadow' version '7.+'
+  id "edu.wpi.first.GradleRIO" version "2024.3.2"
+}
+
+apply plugin: 'edu.wpi.first.GradleRIO'
+// -------------------------------------------------------------------[Project]------------------------------------------------------------------//
+def teamNumber = project.frc.getTeamOrDefault(5411)
+def seasonYear = new SimpleDateFormat("yyyy").format(new Date())
+def revisionNumber = "git rev-list --count HEAD".execute().text.trim()
+
+application {
+  mainClass.set("org.frc${teamNumber}.robot${seasonYear}.Main")
+}
+project.setGroup("org.frc{teamNumber}")
+project.setVersion("${seasonYear}-1.${revisionNumber}")
+
+if (hasProperty('buildScan')) {
+  buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir '/src/main/java/org/frc{teamNumber}'
+    }
+  }
+  test {
+    java {
+      srcDir '/src/test/java'
+    }
+  }
+}
+// -----------------------------------------------------------------[Repositories]---------------------------------------------------------------//
+repositories {
+  maven {
+    url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
+    credentials {
+      username = "Mechanical-Advantage-Bot"
+      password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
+    }
+  }
+  maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots/"
+  }
+  mavenLocal()
+}
+// ------------------------------------------------------------------[Deployment]----------------------------------------------------------------//
+deploy {
+  targets {
+    roborio(getTargetTypeClass('RoboRIO')) {
+      team = project.frc.getTeamOrDefault(5411)
+      debug = project.frc.getDebugOrDefault(false)
+      artifacts {
+        frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+          jarTask = shadowJar
+
+          gcType = edu.wpi.first.gradlerio.deploy.roborio.GarbageCollectorType.Other
+          jvmArgs << '-XX:+UseG1GC'
+
+          jvmArgs.add("-Dcom.sun.management.jmxremote=true")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
+          jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
+          jvmArgs.add("-Djava.rmi.server.hostname=10.54.11.2")
+        }
+        frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+          predeploy << { execute 'rm -rf /home/lvuser/deploy' }
+          files = project.fileTree('src/main/deploy')
+          directory = '/home/lvuser/deploy'
+        }
+      }
+    }
+  }
+}
+// -----------------------------------------------------------------[Dependencies]---------------------------------------------------------------//
+configurations.all {
+  exclude group: "edu.wpi.first.wpilibj"
+}
+
+def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+def includeDesktopSupport = true
+
+dependencies {
+  implementation wpi.java.deps.wpilib()
+  implementation wpi.java.vendor.java()
+
+  implementation fileTree(dir: 'include/**', include: '**.jar')
+
+  implementation group: 'gov.nist.math', name: 'jama', version: '1.0.3'
+
+  implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0-alpha1'
+  implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.0-alpha1'
+  implementation group: 'com.jcabi', name: 'jcabi-aspects', version: '0.25.1'
+
+  roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+  roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+
+  roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+  roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+
+  nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+  nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+  simulationDebug wpi.sim.enableDebug()
+
+  nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+  nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+  simulationRelease wpi.sim.enableRelease()
+
+  def akitJson = new JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
+  annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+
+  testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.8.2'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.+'
+}
+// ------------------------------------------------------------------[Formatting]----------------------------------------------------------------//
+spotless {
+  java {
+    target fileTree('src') {
+      include '**/*.java'
+    }
+    toggleOffOn()
+    removeUnusedImports()
+    importOrder("org.frc${teamNumber}.lib", "org.frc${teamNumber}.robot${seasonYear}", 'edu','com','org','java', '', '\\#').wildcardsLast()
+    setEncoding(StandardCharsets.UTF_8)
+    indentWithSpaces(2)
+  }
+  groovyGradle {
+    target fileTree(".") {
+      include "**/*.gradle"
+      exclude "**/build/**", "**/build-*/**"
+    }
+    greclipse()
+    indentWithSpaces(2)
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+}
+build.dependsOn(spotlessApply)
+
+
+tasks.withType(Javadoc).configureEach {
+  dependsOn(spotlessGroovyGradle)
+  exclude ('org/robotalons/crescendo/**')
+  options.addStringOption('Xdoclint:none', '-quiet')
+  options.addStringOption("docencoding", "utf-8")
+  options.addStringOption("charset", "utf-8")
+  options.addStringOption("encoding", "utf-8")
+  destinationDir = layout.projectDirectory.dir("docs").asFile
+}
+// ----------------------------------------------------------------[Build Checks]----------------------------------------------------------------//
+task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
+  mainClass = "org.littletonrobotics.junction.CheckInstall"
+  classpath = sourceSets.main.runtimeClasspath
+}
+compileJava.finalizedBy(checkAkitInstall)
+
+task(checkRobot, dependsOn: "classes", type: JavaExec) {
+  main = "org.frc${teamNumber}.robot${seasonYear}.Constants"
+  classpath = sourceSets.main.runtimeClasspath
+}
+deployroborio.dependsOn(checkRobot)
+
+task(eventDeploy) {
+  doLast {
+    if (project.gradle.startParameter.taskNames.any({it.toLowerCase().contains("deploy")})) {
+      def branchPrefix = "event"
+      def branch = 'git branch --show-current'.execute().text.trim()
+      def commitMessage = "Update at '${new Date().toString()}'"
+      if (branch.startsWith(branchPrefix)) {
+        exec {
+          workingDir(projectDir)
+          executable 'git'
+          args 'add', '-A'
+        }
+        exec {
+          workingDir(projectDir)
+          executable 'git'
+          args 'commit', '-m', commitMessage
+          ignoreExitValue = true
+        }
+        println "Committed to branch: '$branch'"
+        println "Commit message: '$commitMessage'"
+      } else {
+        println "Not on an event branch, skipping commit"
+      }
+    } else {
+      println "Not running deploy task, skipping commit"
+    }
+  }
+}
+
+test {
+  useJUnitPlatform()
+  systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+}
+// -----------------------------------------------------------------[Compilation]----------------------------------------------------------------//
+java {
+  withSourcesJar()
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+  exclude("org/frc${teamNumber}/lib/**")
+  manifest {
+    attributes(
+        'Built-By'              : System.getProperty("user.name"),
+        'Build-Timestamp'       : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+        'Build-Jdk'             : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+        'Created-By'            : "Gradle ${gradle.gradleVersion}",
+        'Implementation-Version': project.version)
+  }
+}
+deployArtifact.jarTask = shadowJar
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
+
+wpi.java.configureExecutableTasks(shadowJar)
+wpi.java.configureTestTasks(test)
+wpi.java.debugJni.set(false)
+
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+  srcDir       = "src/main/java/"
+  classPackage = "org.frc${teamNumber}.robot${seasonYear}"
+  className    = "Metadata"
+  dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+  timeZone     = "America/Chicago"
+  indent       = "  "
+}
+
+tasks.withType(JavaCompile) {
+  options.compilerArgs.add '-XDoclint=summary'
+  options.compilerArgs.add '-XDstringConcat=inline'
+  options.encoding = 'UTF-8'
+}
+sourceSets.main.java.srcDir(file("build/generated/sources/buildInfo/main/java/"))

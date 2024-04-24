@@ -1,0 +1,2 @@
+.jar files placed in this directory will be automatically included as
+a project dependency, and can be used in code accordingly.

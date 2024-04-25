@@ -1,13 +1,18 @@
 package frc.robot.subsystems.elevator;
 
-public interface Elevator {
+import org.littletonrobotics.junction.AutoLog;
+
+public interface Elevator { 
+    @AutoLog
     public class ElevatorIOInputs { 
        double encoderPos = 0; 
        double currentOutput = 0;  
        double velocity; 
     } 
 
-    public default void setArm(double speed){} 
+    public default void setManualArm(double volts){}  
+
+    public default void setArmReference(double refMeters){}
 
     public default void updateInputs(ElevatorIOInputs inputs){}  
 

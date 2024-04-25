@@ -7,7 +7,7 @@ public interface Elevator {
     public class ElevatorIOInputs { 
        double encoderPos = 0; 
        double currentOutput = 0;  
-       double velocity; 
+       double velocity = 0;
     } 
 
     public default void setManualArm(double volts){}  

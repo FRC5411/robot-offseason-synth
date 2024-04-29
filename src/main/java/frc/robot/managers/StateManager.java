@@ -5,32 +5,52 @@ import frc.robot.managers.ManagerConstants.IndexerStates;
 import frc.robot.managers.ManagerConstants.IntakeStates;
 import frc.robot.managers.ManagerConstants.LauncherStates;
 import frc.robot.managers.ManagerConstants.SwerveStates;
-import frc.robot.managers.ManagerConstants.YoshiStates;
+import frc.robot.subsystems.climb.ClimbSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.indexer.IndexerSubsystem;
+import frc.robot.subsystems.shooter.launcher.LauncherSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class StateManager {
-    private static StateManager instance;
+    protected static StateManager instance;
 
-    private SwerveStates swerveState;
-    private ClimbStates climbState;
-    private IntakeStates intakeState;
-    private LauncherStates launcherState;
-    private IndexerStates indexerState;
-    private YoshiStates yoshiState;
+    protected static SwerveStates swerveState;
+    protected static ClimbStates climbState;
+    protected static IntakeStates intakeState;
+    protected static LauncherStates launcherState;
+    protected static IndexerStates indexerState;
 
-    private StateManager() {
-        swerveState = SwerveStates.IDLE;
-        climbState = ClimbStates.IDLE;
-        intakeState = IntakeStates.IDLE;
-        launcherState = LauncherStates.IDLE;
-        indexerState = IndexerStates.IDLE;
-        yoshiState = YoshiStates.IDLE;
-    }
+    protected static SwerveSubsystem swerveSubsystem;
+    protected static ClimbSubsystem climbSubsystem;
+    protected static IntakeSubsystem intakeSubsystem;
+    protected static LauncherSubsystem launcherSubsystem;
+    protected static IndexerSubsystem indexerSubsystem;
+    protected static ShooterSubsystem shooterSubsystem;
 
     public static synchronized StateManager getInstance() {
         if (instance == null) {
             instance = new StateManager();
+            initStates();
         }
         return instance;
+    }
+
+    public static void initStates() {
+        swerveState = SwerveStates.STOPPED;
+        climbState = ClimbStates.STOPPED;
+        intakeState = IntakeStates.STOPPED;
+        launcherState = LauncherStates.STOPPED;
+        indexerState = IndexerStates.STOPPED;
+    }
+
+    public static void initSubsystems(SwerveSubsystem swerve, ClimbSubsystem climb, IntakeSubsystem intake, LauncherSubsystem launcher, IndexerSubsystem indexer, ShooterSubsystem shooter) {
+        swerveSubsystem = swerve;
+        climbSubsystem = climb;
+        intakeSubsystem = intake;
+        launcherSubsystem = launcher;
+        indexerSubsystem = indexer;
+        shooterSubsystem = shooter;
     }
 
     // Getter Methods
@@ -54,10 +74,6 @@ public class StateManager {
         return indexerState;
     }
 
-    public YoshiStates getYoshiState() {
-        return yoshiState;
-    }
-
     // Setter Methods
     public void setSwerveState(SwerveStates state) {
         swerveState = state;
@@ -77,9 +93,5 @@ public class StateManager {
 
     public void setIndexerState(IndexerStates state) {
         indexerState = state;
-    }
-
-    public void setYoshiState(YoshiStates state) {
-        yoshiState = state;
     }
 }

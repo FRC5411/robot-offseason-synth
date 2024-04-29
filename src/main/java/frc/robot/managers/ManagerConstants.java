@@ -6,26 +6,40 @@ public class ManagerConstants {
     }
 
     public enum SwerveStates {
-        IDLE
+        STOPPED,
+        IDLE,
+        FIELDORI,
+        ROBOTORI,
+        XLOCK
     }
 
     public enum ClimbStates {
-        IDLE
+        STOPPED,
+        IDLE, 
+        RETURNING,
+        GRABBING,
+        HOLD
     }
 
     public enum IntakeStates {
-        IDLE
+        STOPPED,
+        IDLE,
+        INTAKING,
+        OUTTAKING
     }
 
     public enum LauncherStates {
-        IDLE
+        STOPPED,
+        IDLE,
+        EJECT,
+        SHOOT
     }
 
     public enum IndexerStates {
-        IDLE
-    }
-
-    public enum YoshiStates {
-        IDLE
+        STOPPED,
+        IDLE,
+        STOWING,
+        OUTDEXING,
+        INDEXING
     }
 }

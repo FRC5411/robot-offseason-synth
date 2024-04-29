@@ -16,68 +16,44 @@ import edu.wpi.first.math.MathUtil;
 
 public class ElevatorIOSparkMax implements Elevator {  
 
-    /*Pre-made Constants.. will edit at a later date */ 
-    double armP = 1.0;  
-    double armI = 0.0;  
-    double armD = 0.0;   
-    double armFF = 0.5;
-    int armID = 0;
-    double distPerRotation = 0.5; 
-    double tolerance = 4.0; 
-    double outputMax = 12; 
-    double outputMin = -12; 
-    boolean inverted = false; 
-    double boundaryTop = 1.7; 
-    double boundaryBottom = 0;
-    
-    ///////////////////////// 
-
-    private CANSparkMax arm = new CANSparkMax(armID, MotorType.kBrushless); 
-
+    private CANSparkMax arm = new CANSparkMax(ElevatorConstants.armID, MotorType.kBrushless); 
     private RelativeEncoder linearEncoder = arm.getEncoder(); 
-
     private SparkPIDController armController = arm.getPIDController();
 
 
     public ElevatorIOSparkMax(){    
 
-        linearEncoder.setPositionConversionFactor(distPerRotation); 
-        linearEncoder.setVelocityConversionFactor(distPerRotation / 60);  
+        linearEncoder.setPositionConversionFactor(ElevatorConstants.distPerRotation); 
+        linearEncoder.setVelocityConversionFactor(ElevatorConstants.distPerRotation / 60);  
         linearEncoder.setPosition(0); 
-        linearEncoder.setInverted(inverted); 
+        linearEncoder.setInverted(ElevatorConstants.inverted); 
 
-        armController.setP(armP); 
-        armController.setI(armI); 
-        armController.setD(armD);  
-        armController.setFF(armFF);
+        armController.setP(ElevatorConstants.armP); 
+        armController.setI(ElevatorConstants.armI); 
+        armController.setD(ElevatorConstants.armD);  
+        armController.setFF(ElevatorConstants.armFF);
         
-        armController.setOutputRange(outputMin, outputMax);
-
+        armController.setOutputRange(ElevatorConstants.outputMin, ElevatorConstants.outputMax);
         armController.setFeedbackDevice(linearEncoder);   
           
     }
     
 
     public void updateInputs(ElevatorIOInputs inputs){   
-
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
         inputs.encoderPos = linearEncoder.getPosition();
         inputs.velocity = linearEncoder.getVelocity(); 
-
     } 
 
     public void setManualArm(double volts){  
-
-        double pos = linearEncoder.getPosition(); 
-        if ((pos >= boundaryBottom) && (pos <= boundaryTop)){ 
-            armController.setReference(MathUtil.clamp(volts, outputMin, outputMax),ControlType.kVoltage);
+        double pos = linearEncoder.getPosition();
+        if ((pos >= ElevatorConstants.boundaryBottom) && (pos <= ElevatorConstants.boundaryTop)){ 
+            armController.setReference(MathUtil.clamp(volts, ElevatorConstants.outputMin, ElevatorConstants.outputMax),ControlType.kVoltage);
         } 
-
     } 
 
     public void setArmReference(double refMeters){  
-
-        if ((refMeters <= boundaryTop) && (refMeters >= boundaryBottom)){ 
+        if ((refMeters <= ElevatorConstants.boundaryTop) && (refMeters >= ElevatorConstants.boundaryBottom)){ 
            armController.setReference(refMeters, ControlType.kPosition);
         }
         

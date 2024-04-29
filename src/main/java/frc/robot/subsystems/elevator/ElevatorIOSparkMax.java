@@ -4,8 +4,7 @@ package frc.robot.subsystems.elevator;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -14,49 +13,47 @@ import edu.wpi.first.math.MathUtil;
 
 
 
-public class ElevatorIOSparkMax implements Elevator {  
+public class ElevatorIOSparkMax implements ElevatorIO {  
 
     private CANSparkMax arm = new CANSparkMax(ElevatorConstants.armID, MotorType.kBrushless); 
     private RelativeEncoder linearEncoder = arm.getEncoder(); 
-    private SparkPIDController armController = arm.getPIDController();
+    
 
 
     public ElevatorIOSparkMax(){    
-
         linearEncoder.setPositionConversionFactor(ElevatorConstants.distPerRotation); 
         linearEncoder.setVelocityConversionFactor(ElevatorConstants.distPerRotation / 60);  
         linearEncoder.setPosition(0); 
         linearEncoder.setInverted(ElevatorConstants.inverted); 
-
-        armController.setP(ElevatorConstants.armP); 
-        armController.setI(ElevatorConstants.armI); 
-        armController.setD(ElevatorConstants.armD);  
-        armController.setFF(ElevatorConstants.armFF);
         
-        armController.setOutputRange(ElevatorConstants.outputMin, ElevatorConstants.outputMax);
-        armController.setFeedbackDevice(linearEncoder);   
-          
+        ensureHardwareSafety(arm, linearEncoder);
+    } 
+
+
+    private void ensureHardwareSafety(CANSparkMax motor, RelativeEncoder encoder){ 
+        motor.clearFaults(); 
+        motor.restoreFactoryDefaults(); 
+        motor.setInverted(ElevatorConstants.inverted); 
+        motor.setIdleMode(ElevatorConstants.idleMode); 
+    
+        encoder.setPositionConversionFactor(ElevatorConstants.distPerRotation);  
+
+        motor.burnFlash();
     }
     
 
-    public void updateInputs(ElevatorIOInputs inputs){   
+    public void updateInputs(ElevtorIOInputs inputs){   
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
         inputs.encoderPos = linearEncoder.getPosition();
-        inputs.velocity = linearEncoder.getVelocity(); 
+        inputs.velocity = linearEncoder.getVelocity();   
+        inputs.temperature = arm.getMotorTemperature();
+    
     } 
 
     public void setManualArm(double volts){  
-        double pos = linearEncoder.getPosition();
-        if ((pos >= ElevatorConstants.boundaryBottom) && (pos <= ElevatorConstants.boundaryTop)){ 
-            armController.setReference(MathUtil.clamp(volts, ElevatorConstants.outputMin, ElevatorConstants.outputMax),ControlType.kVoltage);
-        } 
+        arm.setVoltage(MathUtil.clamp(volts,-12,12)); 
     } 
 
-    public void setArmReference(double refMeters){  
-        if ((refMeters <= ElevatorConstants.boundaryTop) && (refMeters >= ElevatorConstants.boundaryBottom)){ 
-           armController.setReference(refMeters, ControlType.kPosition);
-        }
-        
-    }
+   
 
 }

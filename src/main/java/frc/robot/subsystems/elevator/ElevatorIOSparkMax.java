@@ -3,11 +3,10 @@ package frc.robot.subsystems.elevator;
 
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Encoder;
 
 
 
@@ -16,27 +15,22 @@ import edu.wpi.first.math.MathUtil;
 public class ElevatorIOSparkMax implements ElevatorIO {  
 
     private CANSparkMax arm = new CANSparkMax(ElevatorConstants.armID, MotorType.kBrushless); 
-    private RelativeEncoder linearEncoder = arm.getEncoder(); 
+    private Encoder linearEncoder = new Encoder(ElevatorConstants.encoderPorts[0],ElevatorConstants.encoderPorts[1]); 
     
 
 
     public ElevatorIOSparkMax(){    
-        linearEncoder.setPositionConversionFactor(ElevatorConstants.distPerRotation); 
-        linearEncoder.setVelocityConversionFactor(ElevatorConstants.distPerRotation / 60);  
-        linearEncoder.setPosition(0); 
-        linearEncoder.setInverted(ElevatorConstants.inverted); 
-        
         ensureHardwareSafety(arm, linearEncoder);
     } 
 
 
-    private void ensureHardwareSafety(CANSparkMax motor, RelativeEncoder encoder){ 
-        motor.clearFaults(); 
+    private void ensureHardwareSafety(CANSparkMax motor, Encoder encoder){ 
+        motor.clearFaults();  
         motor.restoreFactoryDefaults(); 
         motor.setInverted(ElevatorConstants.inverted); 
         motor.setIdleMode(ElevatorConstants.idleMode); 
     
-        encoder.setPositionConversionFactor(ElevatorConstants.distPerRotation);  
+        encoder.setDistancePerPulse(ElevatorConstants.conversionFactor);
 
         motor.burnFlash();
     }
@@ -44,8 +38,8 @@ public class ElevatorIOSparkMax implements ElevatorIO {
 
     public void updateInputs(ElevtorIOInputs inputs){   
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
-        inputs.encoderPos = linearEncoder.getPosition();
-        inputs.velocity = linearEncoder.getVelocity();   
+        inputs.encoderPos = linearEncoder.getDistance();
+        inputs.velocity = linearEncoder.getRate();   
         inputs.temperature = arm.getMotorTemperature();
     
     } 

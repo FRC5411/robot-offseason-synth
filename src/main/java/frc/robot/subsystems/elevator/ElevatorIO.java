@@ -14,7 +14,7 @@ public interface ElevatorIO {
     public default void setManualArm(double volts){}  
 
     
-    public default void updateInputs(ElevtorIOInputs inputs){}  
+    public default void updateInputs(ElevatorIOInputsAutoLogged inputs){}  
 
     
 

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevator;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
@@ -31,6 +32,10 @@ public class ElevatorIOSim implements ElevatorIO {
         inputs.velocity = armSim.getVelocityRadPerSec(); 
         inputs.encoderPos = encoderSim.getDistance(); 
         inputs.currentOutput = armSim.getCurrentDrawAmps(); 
+    } 
+
+    public void setManualArm(double volts){ 
+        pseudoMotor.setVoltage(MathUtil.clamp(volts,-12,12));
     }
 
 }

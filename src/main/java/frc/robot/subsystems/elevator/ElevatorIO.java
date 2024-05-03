@@ -7,7 +7,7 @@ public interface ElevatorIO {
     public class ElevtorIOInputs{ 
         double currentOutput = 0; 
         double velocity = 0; 
-        double encoderPos = 0;  
+        double encoderPosRads = 0;  
         double temperature = 0;
     }
 
@@ -15,7 +15,8 @@ public interface ElevatorIO {
 
     
     public default void updateInputs(ElevatorIOInputsAutoLogged inputs){}  
-
+    
+    public default double getEncoderPos(){return 0;}
     
 
 }

@@ -46,7 +46,14 @@ public class ElevatorConstants {
 
     public static final boolean inverted = false; // *Self Explanatory* 
 
-    public static final int armID = 0; // ID for the CANSparkMax (only motor)
+    public static final int armID = 0; // ID for the CANSparkMax (only motor) 
+
+    public class Setpoints{ 
+         public static double flat = 0; 
+         public static double low = 0; 
+         public static double medium = 0; 
+         public static double high = 0;
+    }
      
     
     

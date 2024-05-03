@@ -14,12 +14,16 @@ public class  Elevator extends SubsystemBase {
 
     public void setManualArm(double volts){ 
         elevatorIO.setManualArm(volts);
+    }  
+
+    public double getAngle(){ 
+        return elevatorIO.getEncoderPos();
     } 
+
 
     @Override
     public void periodic(){ 
         elevatorIO.updateInputs(inputs);  
         Logger.processInputs("Elevator Constants",inputs);
-
     }
 }

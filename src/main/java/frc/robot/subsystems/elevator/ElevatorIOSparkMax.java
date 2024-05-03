@@ -35,10 +35,13 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         motor.burnFlash();
     }
     
+    public double getEncoderPos(){ 
+       return linearEncoder.getDistance();
+    }
 
     public void updateInputs(ElevtorIOInputs inputs){   
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
-        inputs.encoderPos = linearEncoder.getDistance();
+        inputs.encoderPosRads = getEncoderPos(); 
         inputs.velocity = linearEncoder.getRate();   
         inputs.temperature = arm.getMotorTemperature();
     

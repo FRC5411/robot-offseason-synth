@@ -5,12 +5,15 @@
 [![GitHub Contributors](https://img.shields.io/github/contributors/FRC5411/template-base.svg?branch=Production)](https://github.com/FRC5411/template-base/graphs/contributors)
 [![GitHub Issues](https://img.shields.io/github/issues/FRC5411/template-base.svg?branch=Production)](https://github.com/FRC5411/template-base/graphs/issues)
 
-## Installation & Setup
+## Usage
 
-Below is a list of instructions to properly *build* the project, see [requirements](##Requirements)
+To get started with your own project, follow theese steps after ensuring that your system meets the [requirements](##Requirements):
 
 1. Clone the repository with `git clone https://github.com/FRC5411/template-base.git`
 2. Build the repository with `./gradlew build` or `./gradlew build` if you do not have a local gradle installation
+3. Rename the directories `src/../frc{teamNumber}` and `src/../robot{seasonYear}` to the appropriate numbers, then modify the `.wpilib/wpilib_preferences.json` to match
+4. Deposit the relevant `.json` vendor depositories and `.jar` libraries into the respective `vendordeps/` and `include/` directories.
+5. Update the `README.md` to include project-specific resources
 
 ## Requirements
 
@@ -36,7 +39,7 @@ The project is organized based on WPILib's command-based control structure modif
 
 ## Gradle 
 
-#### All tasks follow a simple format:
+#### For our purposes, all gradle commands follow a simple format:
 
 run `./gradlew {Modifier} {Task} --{Property} -x {Task}`
 

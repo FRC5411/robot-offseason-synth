@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Encoder;
 
+import frc.robot.subsystems.elevator.ElevatorConstants.Safety;
 
 
 
@@ -28,27 +29,34 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         motor.clearFaults();  
         motor.restoreFactoryDefaults(); 
         motor.setInverted(ElevatorConstants.inverted); 
-        motor.setIdleMode(ElevatorConstants.idleMode); 
+        motor.setIdleMode(Safety.idleMode); 
     
         encoder.setDistancePerPulse(ElevatorConstants.conversionFactor);
 
         motor.burnFlash();
     }
     
+    @Override
     public double getEncoderPos(){ 
        return linearEncoder.getDistance();
     }
-
-    public void updateInputs(ElevtorIOInputs inputs){   
+    
+    @Override
+    public double getVelocity(){ 
+       return linearEncoder.getRate();
+    }
+    
+    @Override
+    public void updateInputs(ElevatorIOInputs inputs){   
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
-        inputs.encoderPosRads = getEncoderPos(); 
+        inputs.encoderPosRads = linearEncoder.getDistance(); 
         inputs.velocity = linearEncoder.getRate();   
         inputs.temperature = arm.getMotorTemperature();
     
     } 
 
     public void setManualArm(double volts){  
-        arm.setVoltage(MathUtil.clamp(volts,-12,12)); 
+        arm.setVoltage(MathUtil.clamp(volts,Safety.outputMin,Safety.outputMax)); 
     } 
 
    

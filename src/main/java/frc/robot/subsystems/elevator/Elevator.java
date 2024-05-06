@@ -18,7 +18,11 @@ public class  Elevator extends SubsystemBase {
 
     public double getAngle(){ 
         return elevatorIO.getEncoderPos();
-    } 
+    }  
+
+    public double getVelocity(){ 
+        return elevatorIO.getVelocity();
+    }
 
 
     @Override

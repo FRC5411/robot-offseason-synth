@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.subsystems.elevator.ElevatorConstants.SIM;
 
 public class ElevatorIOSim implements ElevatorIO { 
 
@@ -15,10 +16,10 @@ public class ElevatorIOSim implements ElevatorIO {
     private SingleJointedArmSim armSim = new SingleJointedArmSim(
         DCMotor.getNEO(1), 
         ElevatorConstants.gearRatio, 
-        SingleJointedArmSim.estimateMOI(ElevatorConstants.metersArmLength, ElevatorConstants.kiloArmMass),
-        ElevatorConstants.metersArmLength, 
-        ElevatorConstants.minAngle, 
-        ElevatorConstants.maxAngle, 
+        SingleJointedArmSim.estimateMOI(SIM.metersArmLength, SIM.kiloArmMass),
+        SIM.metersArmLength, 
+        SIM.minAngle, 
+        SIM.maxAngle, 
         true, 
         0); 
     
@@ -32,7 +33,7 @@ public class ElevatorIOSim implements ElevatorIO {
         return encoderSim.getDistance();
     }
     
-    public void updateInputs(ElevtorIOInputs inputs){ 
+    public void updateInputs(ElevatorIOInputs inputs){ 
         armSim.update(0.02); 
         inputs.velocity = armSim.getVelocityRadPerSec(); 
         inputs.encoderPosRads = encoderSim.getDistance(); 

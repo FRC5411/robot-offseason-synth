@@ -2,9 +2,10 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ElevatorIO { 
+public interface ElevatorIO {  
+    
     @AutoLog
-    public class ElevtorIOInputs{ 
+    public class ElevatorIOInputs{ 
         double currentOutput = 0; 
         double velocity = 0; 
         double encoderPosRads = 0;  
@@ -13,10 +14,11 @@ public interface ElevatorIO {
 
     public default void setManualArm(double volts){}  
 
+    public default void updateInputs(ElevatorIOInputs inputs){}  
     
-    public default void updateInputs(ElevatorIOInputsAutoLogged inputs){}  
-    
-    public default double getEncoderPos(){return 0;}
+    public default double getEncoderPos(){return 0;} 
+
+    public default double getVelocity(){return 0;}
     
 
 }

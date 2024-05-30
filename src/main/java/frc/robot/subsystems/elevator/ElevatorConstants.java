@@ -1,6 +1,6 @@
 package frc.robot.subsystems.elevator;
 
-import com.revrobotics.CANSparkBase.IdleMode;
+
 
 public class ElevatorConstants {  
 
@@ -8,8 +8,8 @@ public class ElevatorConstants {
     public static final boolean inverted = false;
     public static final double gearRatio = 0.77;
 
-    public static final int[] encoderPorts = {5,7}; 
-    public static final double conversionFactor = (2 * Math.PI) * 4096;
+    public static final int[] encoderPorts = {5,7};  
+    
 
     class ProfiledPID { 
         public static final double armP = 1.0;  
@@ -32,7 +32,7 @@ public class ElevatorConstants {
     class Safety {
         public static final double outputMax = 12; 
         public static final double outputMin = -12; 
-        public static final IdleMode idleMode = IdleMode.kBrake;   
+        public static final String idleMode = "brake";
     }
       
     class SIM{

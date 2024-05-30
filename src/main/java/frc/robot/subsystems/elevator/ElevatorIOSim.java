@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
@@ -26,7 +27,7 @@ public class ElevatorIOSim implements ElevatorIO {
     private EncoderSim encoderSim = new EncoderSim(realEncoder); 
     
     public ElevatorIOSim(){ 
-        realEncoder.setDistancePerPulse(ElevatorConstants.conversionFactor);
+        realEncoder.setDistancePerPulse(Units.rotationsToRadians(1) * 4096);
     } 
     
     public double getEncoderPos(){ 

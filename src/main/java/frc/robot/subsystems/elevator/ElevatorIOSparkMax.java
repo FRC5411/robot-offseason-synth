@@ -2,13 +2,16 @@ package frc.robot.subsystems.elevator;
 
 
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.revrobotics.CANSparkMax;
 //import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
+
 import edu.wpi.first.wpilibj.Encoder;
 
 import frc.robot.subsystems.elevator.ElevatorConstants.Safety;
@@ -20,49 +23,57 @@ import frc.robot.subsystems.elevator.ElevatorConstants.Safety;
 public class ElevatorIOSparkMax implements ElevatorIO {  
 
     private CANSparkMax arm; 
-    private Encoder encoder;
+    private Encoder encoder; 
+    private double lastVelocity;
+    private double acceleration;
     
 
 
     public ElevatorIOSparkMax(){  
         this.arm = new CANSparkMax(ElevatorConstants.armID, MotorType.kBrushless); 
         this.encoder = new Encoder(ElevatorConstants.encoderPorts[0],ElevatorConstants.encoderPorts[1]); 
-        ensureHardwareSafety();
-    } 
-
-
-    private void ensureHardwareSafety(){ 
-        this.arm.clearFaults();  
-        this.arm.restoreFactoryDefaults(); 
+        
         this.arm.setInverted(ElevatorConstants.inverted); 
         
         if (Safety.idleMode == "brake"){ 
             this.arm.setIdleMode(IdleMode.kBrake);
         }else { 
             this.arm.setIdleMode(IdleMode.kCoast);
-        }  
+        } 
+        
+        this.acceleration = 0;  
+        this.lastVelocity = 0;
+        long sampleRate = 1000;
 
-        this.encoder.setDistancePerPulse(Units.rotationsToRadians(1) * 4096);
+        Timer timer = new Timer();  
 
-        this.arm.burnFlash();
-    }
-    
-    @Override
-    public double getEncoderPos(){ 
-       return encoder.getDistance();
-    }
-    
-    @Override
-    public double getVelocity(){ 
+        timer.scheduleAtFixedRate( 
+            new TimerTask(){ 
+                @Override  
+                public void run(){ 
+                   acceleration = (getVelocity() - lastVelocity) / sampleRate;  
+                   lastVelocity = getVelocity();
+                }
+            }, 
+            sampleRate, 
+            0
+        );
+            
+        this.encoder.setDistancePerPulse(ElevatorConstants.pulsesToMeters);
+    } 
+     
+    private double getVelocity(){ 
        return encoder.getRate();
     }
     
     @Override
     public void updateInputs(ElevatorIOInputs inputs){   
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage(); 
-        inputs.encoderPosRads = encoder.getDistance(); 
-        inputs.velocity = encoder.getRate();   
-        inputs.temperature = arm.getMotorTemperature();
+        inputs.encoderPosMeters = encoder.getDistance(); 
+        inputs.velocity = getVelocity();   
+        inputs.temperature = arm.getMotorTemperature(); 
+        inputs.accleration = this.acceleration; 
+        lastVelocity = inputs.velocity;
     
     } 
     @Override

@@ -7,8 +7,9 @@ public class ElevatorConstants {
     public static final int armID = 0;    
     public static final boolean inverted = false;
     public static final double gearRatio = 0.77;
-
     public static final int[] encoderPorts = {5,7};  
+    public static final double rotationsToMeters = 0.66; // Customize for TalonFX
+    public static final double pulsesToMeters = 0.66; // Customize for SparkMax
     
 
     class ProfiledPID { 
@@ -35,18 +36,16 @@ public class ElevatorConstants {
         public static final String idleMode = "brake";
     }
       
-    class SIM{
-        public static final double kiloArmMass = 15; 
+    class Simulation{
+        public static final double carriageMass = 15;  
+        public static final double drumRadius = 3;
         public static final double metersArmLength = 2.5;  
-        public static final double maxAngle = 225; 
-        public static final double minAngle = -30;  
+        public static final double maxHeightMeters = 225; 
+        public static final double minHeightMeters = -30;  
     }
 
     class Setpoints{ 
-         public static double flat = 0; 
-         public static double low = 0; 
-         public static double medium = 0; 
-         public static double high = 0;
+         public static double FLAT = 0; 
     }
      
     

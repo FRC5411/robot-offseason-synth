@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class  Elevator extends SubsystemBase {
@@ -15,13 +16,17 @@ public class  Elevator extends SubsystemBase {
     public void setManualArm(double volts){ 
         elevatorIO.setManualArm(volts);
     }  
-
-    public double getAngle(){ 
-        return elevatorIO.getEncoderPos();
-    }  
+   
+    public double getMeterPos(){ 
+        return inputs.encoderPosMeters;
+    } 
 
     public double getVelocity(){ 
-        return elevatorIO.getVelocity();
+        return inputs.velocity;
+    } 
+
+    public double getAcceleration(){ 
+        return inputs.accleration;
     }
 
 

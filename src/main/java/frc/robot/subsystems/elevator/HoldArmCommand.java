@@ -1,17 +1,20 @@
 package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
+
+
 import frc.robot.subsystems.elevator.ElevatorConstants.FF;
 
 public class HoldArmCommand extends Command {
     private Elevator elevator; 
-    private ArmFeedforward feedForward; 
+    private ElevatorFeedforward feedForward; 
 
     public HoldArmCommand(Elevator elevator){ 
         this.elevator = elevator; 
         
-        feedForward = new ArmFeedforward(
+        feedForward = new ElevatorFeedforward(
             FF.armS, 
             FF.armG, 
             FF.armV, 
@@ -23,8 +26,8 @@ public class HoldArmCommand extends Command {
     @Override 
     public void execute(){ 
         double voltageOutput = feedForward.calculate(
-            Math.toRadians(elevator.getAngle()),  
-            Math.toRadians(elevator.getVelocity()) / 12
+            elevator.getVelocity(),  
+            elevator.getAcceleration()
         ); 
         elevator.setManualArm(voltageOutput);
     } 

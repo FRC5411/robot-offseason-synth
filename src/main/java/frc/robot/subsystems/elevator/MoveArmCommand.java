@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.elevator.ElevatorConstants.ProfiledPID;
+import frc.robot.subsystems.elevator.ElevatorConstants.Setpoints;
 
 public class MoveArmCommand extends Command {
     
@@ -30,19 +31,15 @@ public class MoveArmCommand extends Command {
 
     @Override 
     public void initialize(){    
-
         pidControl.setTolerance(ProfiledPID.tolerance); 
-        pidControl.reset(elevator.getAngle()); 
-
+        pidControl.reset(elevator.getMeterPos() + Setpoints.FLAT); 
     } 
     
 
     @Override 
     public void execute(){  
-
-        double voltageOutput = pidControl.calculate(elevator.getAngle(), setpoint); 
+        double voltageOutput = pidControl.calculate(elevator.getMeterPos(), setpoint); 
         elevator.setManualArm(voltageOutput); 
-
     }  
 
     @Override 

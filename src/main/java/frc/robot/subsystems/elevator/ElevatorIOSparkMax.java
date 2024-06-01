@@ -72,7 +72,7 @@ public class ElevatorIOSparkMax implements ElevatorIO {
         inputs.encoderPosMeters = encoder.getDistance(); 
         inputs.velocity = getVelocity();   
         inputs.temperature = arm.getMotorTemperature(); 
-        inputs.accleration = this.acceleration; 
+        inputs.acclerationMetersPerSec = this.acceleration; 
         lastVelocity = inputs.velocity;
     
     } 

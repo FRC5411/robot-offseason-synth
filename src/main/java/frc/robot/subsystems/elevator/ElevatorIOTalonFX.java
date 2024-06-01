@@ -8,15 +8,16 @@ import edu.wpi.first.math.MathUtil;
 
 import frc.robot.subsystems.elevator.ElevatorConstants.Safety;
 
-public class ElevatorIOTalonFX implements ElevatorIO {
+public class ElevatorIOTalonFX implements ElevatorIO {  
+
     private TalonFX arm;      
     
 
-    public ElevatorIOTalonFX(){ 
+    public ElevatorIOTalonFX(){  
+
         this.arm = new TalonFX(ElevatorConstants.armID);   
         
         this.arm.setInverted(false); 
-         
 
         if (Safety.idleMode == "brake"){ 
             this.arm.setNeutralMode(NeutralModeValue.Brake);
@@ -45,7 +46,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
        inputs.velocity = velocitySignal.getValueAsDouble() * ElevatorConstants.rotationsToMeters; 
        inputs.temperature = tempSignal.getValueAsDouble(); 
        inputs.currentOutput = outputSignal.getValueAsDouble(); 
-       inputs.accleration = accelerationSignal.getValueAsDouble() * ElevatorConstants.rotationsToMeters;  
+       inputs.acclerationMetersPerSec = accelerationSignal.getValueAsDouble() * ElevatorConstants.rotationsToMeters;  
 
     } 
 

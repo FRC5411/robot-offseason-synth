@@ -65,7 +65,7 @@ public class ElevatorIOSim implements ElevatorIO {
         inputs.velocity = getVelocity();
         inputs.encoderPosMeters = encoderSim.getDistance(); 
         inputs.currentOutput = armSim.getCurrentDrawAmps();   
-        inputs.accleration = this.acceleration;
+        inputs.acclerationMetersPerSec = this.acceleration;
         
     } 
 

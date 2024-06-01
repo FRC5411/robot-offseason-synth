@@ -9,7 +9,7 @@ public interface ElevatorIO {
         double currentOutput = 0; 
         double velocity = 0; 
         double encoderPosMeters = 0; 
-        double accleration = 0;
+        double acclerationMetersPerSec = 0;
         double temperature = 0;
     }
 

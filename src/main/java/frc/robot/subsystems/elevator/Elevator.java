@@ -26,7 +26,7 @@ public class  Elevator extends SubsystemBase {
     } 
 
     public double getAcceleration(){ 
-        return inputs.accleration;
+        return inputs.acclerationMetersPerSec;
     }
 
 

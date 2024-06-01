@@ -4,7 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.revrobotics.CANSparkMax;
-//import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -13,7 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Encoder;
 
 import frc.robot.subsystems.elevator.ElevatorConstants.Safety;
-//import frc.robot.subsystems.elevator.ElevatorConstants.SparkMax;
+
 
 public class ElevatorIOSparkMax implements ElevatorIO {
 
@@ -62,10 +62,10 @@ public class ElevatorIOSparkMax implements ElevatorIO {
     public void updateInputs(ElevatorIOInputs inputs) {
         inputs.currentOutput = arm.getAppliedOutput() * arm.getBusVoltage();
         inputs.encoderPosMeters = encoder.getDistance();
-        inputs.velocity = getVelocity();
+        inputs.velocityMeters = getVelocity();
         inputs.temperature = arm.getMotorTemperature();
         inputs.acclerationMetersPerSec = this.acceleration;
-        lastVelocity = inputs.velocity;
+        lastVelocity = inputs.velocityMeters;
 
     }
 

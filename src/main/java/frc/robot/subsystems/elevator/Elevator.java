@@ -19,18 +19,20 @@ public class Elevator extends SubsystemBase {
     public double getMeterPos() {
         return inputs.encoderPosMeters;
     }
-
+    
+    // Elevator Feed Forward
     public double getVelocity() {
-        return inputs.velocity;
+        return inputs.velocityMeters;
     }
 
     public double getAcceleration() {
         return inputs.acclerationMetersPerSec;
     }
+    // 
 
     @Override
     public void periodic() {
         elevatorIO.updateInputs(inputs);
-        Logger.processInputs("Elevator Constants", inputs);
+        Logger.processInputs("Elevator/", inputs);
     }
 }

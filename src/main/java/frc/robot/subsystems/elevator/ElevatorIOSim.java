@@ -7,6 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 //import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
@@ -22,7 +23,11 @@ public class ElevatorIOSim implements ElevatorIO {
     private double acceleration;
     private double lastVelocity;
 
-    private ElevatorSim armSim = new ElevatorSim(
+    private ElevatorSim armSim;
+
+    public ElevatorIOSim() {  
+
+        armSim = new ElevatorSim(
             DCMotor.getNEO(1),
             ElevatorConstants.gearRatio,
             Simulation.carriageMass,
@@ -30,10 +35,11 @@ public class ElevatorIOSim implements ElevatorIO {
             Simulation.minHeightMeters,
             Simulation.maxHeightMeters,
             true,
-            0);
+            0); 
 
-    public ElevatorIOSim() {
-        realEncoder.setDistancePerPulse(1);
+        realEncoder.setDistancePerPulse(1); 
+
+        encoderSim = new EncoderSim(realEncoder);
 
         this.acceleration = 0;
         this.lastVelocity = 0;
@@ -51,6 +57,12 @@ public class ElevatorIOSim implements ElevatorIO {
                 },
                 sampleRate,
                 0);
+    } 
+
+    private void update(){  
+       armSim.setInput(pseudoMotor.get() * RobotController.getBatteryVoltage()); 
+       encoderSim.setDistance(armSim.getPositionMeters());
+       armSim.update(0.02);
     }
 
     private double getVelocity() {
@@ -58,7 +70,7 @@ public class ElevatorIOSim implements ElevatorIO {
     }
 
     public void updateInputs(ElevatorIOInputs inputs) {
-        armSim.update(0.02);
+        update();
         inputs.velocityMeters = getVelocity();
         inputs.encoderPosMeters = encoderSim.getDistance();
         inputs.currentOutput = armSim.getCurrentDrawAmps();

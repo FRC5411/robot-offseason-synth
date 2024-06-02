@@ -33,5 +33,6 @@ public class DJArm extends SubsystemBase {
 
     public double getOuterVelocity() {
         return inputs.velocityRadsOUT;
-    }
+    } 
+
 }
